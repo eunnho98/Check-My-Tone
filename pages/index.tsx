@@ -24,15 +24,20 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <Heading textAlign="center" mt="20px" fontSize="6xl">
+      <Heading
+        textAlign="center"
+        mt="20px"
+        fontSize="6xl"
+        fontWeight="extrabold"
+      >
         내 목소리는 무슨 음을 낼까요?
       </Heading>
-      <Text textAlign="center" fontSize="3xl" mt="1rem">
+      <Text textAlign="center" fontSize="3xl" mt="1rem" fontWeight="bold">
         녹음 버튼을 누르고 목소리를 들려주세요!
       </Text>
       <IconButton
         position="absolute"
-        top="1rem"
+        top={{ base: '5rem', md: '1rem' }}
         right="1rem"
         aria-label="Toggle Mode"
         onClick={toggleColorMode}

@@ -1,7 +1,13 @@
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { AppProps } from 'next/app';
-import theme from '@/styles/theme';
 import { RecoilRoot } from 'recoil';
+
+const theme = extendTheme({
+  fonts: {
+    heading: `'Stylish', sans-serif`,
+    body: `'Stylish', sans-serif`,
+  },
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
