@@ -1,13 +1,27 @@
 import { Box } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import SoundFont from 'soundfont-player';
+
+declare global {
+  interface Window {
+    AudioContext: typeof AudioContext;
+    webkitAudioContext: typeof AudioContext;
+  }
+}
 
 type PianoKeyProps = {
   isBlackKey: boolean;
   octave: number;
   note: string;
+  audioContext: AudioContext;
 };
 
-const PianoKey = ({ isBlackKey, octave, note }: PianoKeyProps) => {
+const PianoKey = ({
+  isBlackKey,
+  octave,
+  note,
+  audioContext,
+}: PianoKeyProps) => {
   const color = isBlackKey ? 'black' : 'white';
   const size = isBlackKey ? 26 : 36;
   const label = `${note}${octave}`;
@@ -20,6 +34,15 @@ const PianoKey = ({ isBlackKey, octave, note }: PianoKeyProps) => {
 
   const handleMouseUp = () => {
     setIsPressed(false);
+  };
+
+  // make sound
+  const handleClick = async (tone: string) => {
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume();
+    }
+    const soundfont = await SoundFont.instrument(audioContext, 'clavinet');
+    soundfont.play(tone);
   };
 
   return (
@@ -39,6 +62,7 @@ const PianoKey = ({ isBlackKey, octave, note }: PianoKeyProps) => {
       color={`${isBlackKey ? 'white' : 'black'}`}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
+      onClick={() => handleClick(label)}
       cursor="pointer"
     >
       <Box fontSize={`${isBlackKey ? 12 : 18}px`} fontWeight="bold">
@@ -49,6 +73,11 @@ const PianoKey = ({ isBlackKey, octave, note }: PianoKeyProps) => {
 };
 
 const Piano = () => {
+  // make audioContext
+  // PianoKey에서 초기화하면 계속 초기화돼서 24번밖에 소리가 안나옴
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const audioContext = new AudioContext();
+
   const notes = [
     'C',
     'C#',
@@ -63,7 +92,7 @@ const Piano = () => {
     'A#',
     'B',
   ];
-  const octaves = [1, 2, 3];
+  const octaves = [2, 3, 4];
   const keys = [];
 
   for (let octave of octaves) {
@@ -76,6 +105,7 @@ const Piano = () => {
           isBlackKey={isBlackKey}
           octave={octave}
           note={note}
+          audioContext={audioContext}
         />,
       );
     }
