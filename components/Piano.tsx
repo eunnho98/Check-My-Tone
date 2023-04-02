@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 
 type PianoKeyProps = {
   isBlackKey: boolean;
@@ -7,9 +7,9 @@ type PianoKeyProps = {
   note: string;
 };
 
-const PianoKey: FC<PianoKeyProps> = ({ isBlackKey, octave, note }) => {
+const PianoKey = ({ isBlackKey, octave, note }: PianoKeyProps) => {
   const color = isBlackKey ? 'black' : 'white';
-  const size = isBlackKey ? 30 : 36;
+  const size = isBlackKey ? 26 : 36;
   const label = `${note}${octave}`;
 
   const [isPressed, setIsPressed] = useState(false);
@@ -24,13 +24,13 @@ const PianoKey: FC<PianoKeyProps> = ({ isBlackKey, octave, note }) => {
 
   return (
     <Box
-      position="relative"
       border="1px solid black"
       bg={isPressed ? 'gray.500' : color}
       w={`${size}px`}
       h={`${size * 4}px`}
       mr={`${isBlackKey ? -15 : 0}px`}
       ml={`${isBlackKey ? -15 : 0}px`}
+      zIndex={`${isBlackKey ? 2 : 0}`}
       display="flex"
       alignItems="flex-end"
       justifyContent="center"
@@ -41,19 +41,14 @@ const PianoKey: FC<PianoKeyProps> = ({ isBlackKey, octave, note }) => {
       onMouseUp={handleMouseUp}
       cursor="pointer"
     >
-      <Box
-        position={`${isBlackKey ? 'absolute' : 'static'}`}
-        right={`${isBlackKey ? 7 : 0}px`}
-        fontSize={`${isBlackKey ? 12 : 18}px`}
-        fontWeight="bold"
-      >
+      <Box fontSize={`${isBlackKey ? 12 : 18}px`} fontWeight="bold">
         {label}
       </Box>
     </Box>
   );
 };
 
-const Piano: FC = () => {
+const Piano = () => {
   const notes = [
     'C',
     'C#',
