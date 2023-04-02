@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import { useColorMode } from '@chakra-ui/color-mode';
 import React from 'react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
@@ -10,11 +11,12 @@ import {
   VStack,
   useColorModeValue,
 } from '@chakra-ui/react';
-import Piano from '@/components/Piano';
 import InputArea from '@/components/InputArea';
 import MyIcon from '@/components/common/MyIcon';
 import { useRecoilState } from 'recoil';
 import { iconType } from '../atom/atom';
+
+const Piano = dynamic(() => import('@/components/Piano'), { ssr: false });
 
 const Home: NextPage = () => {
   // hook which help us to toggle the color modes
