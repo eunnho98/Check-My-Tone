@@ -1,33 +1,35 @@
 import type { NextPage } from 'next';
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
 import { useColorMode } from '@chakra-ui/color-mode';
 import React from 'react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { IconButton } from '@chakra-ui/button';
-import { Box, Button, Text, Heading, Icon, IconProps } from '@chakra-ui/react';
+import {
+  Button,
+  Text,
+  Heading,
+  VStack,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import Piano from '@/components/Piano';
-import { PianoKeyboard } from '@/components/Piano2';
-import PianoKey from '@/components/PianoKey';
+import InputArea from '@/components/InputArea';
+import MyIcon from '@/components/common/MyIcon';
+import { useRecoilState } from 'recoil';
+import { iconType } from '../atom/atom';
 
 const Home: NextPage = () => {
   // hook which help us to toggle the color modes
   const { colorMode, toggleColorMode } = useColorMode();
-
-  const CircleIcon = (props: IconProps) => (
-    <Icon viewBox="0 0 200 200" {...props}>
-      <path
-        fill="currentColor"
-        d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
-      />
-    </Icon>
-  );
+  const [icon, setIcon] = useRecoilState(iconType);
+  const squareColor = useColorModeValue('gray.600', 'gray.200');
 
   return (
     <div>
       <Heading textAlign="center" mt="20px" fontSize="6xl">
         내 목소리는 무슨 음을 낼까요?
       </Heading>
+      <Text textAlign="center" fontSize="3xl" mt="1rem">
+        녹음 버튼을 누르고 목소리를 들려주세요!
+      </Text>
       <IconButton
         position="absolute"
         top="1rem"
@@ -37,11 +39,28 @@ const Home: NextPage = () => {
       >
         {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
       </IconButton>
-      <Button w="96px" height="96px">
-        <CircleIcon boxSize={14} color="red.500" />
-      </Button>
 
-      <Piano />
+      <VStack justify="center" spacing={20} mt="2rem">
+        <Piano />
+        <InputArea />
+        <Button
+          w="96px"
+          h="96px"
+          onClick={() => {
+            if (icon === 'circle') {
+              setIcon('square');
+            } else {
+              setIcon('circle');
+            }
+          }}
+        >
+          <MyIcon
+            type={icon}
+            boxSize={icon === 'circle' ? 16 : 12}
+            color={icon === 'circle' ? 'red.400' : squareColor}
+          />
+        </Button>
+      </VStack>
     </div>
   );
 };
