@@ -14,6 +14,7 @@ type PianoKeyProps = {
   octave: number;
   note: string;
   audioContext: AudioContext;
+  soundfont: SoundFont.Player | undefined;
 };
 
 const PianoKey = ({
@@ -21,6 +22,7 @@ const PianoKey = ({
   octave,
   note,
   audioContext,
+  soundfont,
 }: PianoKeyProps) => {
   const color = isBlackKey ? 'black' : 'white';
   const size = isBlackKey ? 26 : 36;
@@ -28,21 +30,25 @@ const PianoKey = ({
 
   const [isPressed, setIsPressed] = useState(false);
 
-  const handleMouseDown = () => {
+  const handleMouseDown = async (tone: string) => {
     setIsPressed(true);
-  };
-
-  const handleMouseUp = () => {
-    setIsPressed(false);
-  };
-
-  // make sound
-  const handleClick = async (tone: string) => {
     if (audioContext.state === 'suspended') {
       await audioContext.resume();
     }
-    const soundfont = await SoundFont.instrument(audioContext, 'clavinet');
-    soundfont.play(tone);
+    if (soundfont) {
+      soundfont.play(tone, audioContext.currentTime, {
+        duration: 10, // 음표 재생 시간
+        gain: 2, // 볼륨 설정
+        sustain: 10, // 누르고 있는 상태 유지 시간
+      });
+    }
+  };
+
+  const handleMouseUp = async () => {
+    setIsPressed(false);
+    if (soundfont) {
+      soundfont.stop();
+    }
   };
 
   return (
@@ -60,9 +66,8 @@ const PianoKey = ({
       borderRadius={`${isBlackKey ? '0 0 8px 8px' : '8px'}`}
       boxShadow={`${isBlackKey ? 'none' : 'md'}`}
       color={`${isBlackKey ? 'white' : 'black'}`}
-      onMouseDown={handleMouseDown}
+      onMouseDown={() => handleMouseDown(label)}
       onMouseUp={handleMouseUp}
-      onClick={() => handleClick(label)}
       cursor="pointer"
     >
       <Box fontSize={`${isBlackKey ? 12 : 18}px`} fontWeight="bold">
@@ -77,7 +82,21 @@ const Piano = () => {
   // PianoKey에서 초기화하면 계속 초기화돼서 24번밖에 소리가 안나옴
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
+  const [soundfont, setSoundFont] = useState<SoundFont.Player>();
 
+  // 마우스를 떼면 소리가 바로 끝나도록
+  // async로 생성해서 전달 -> 소리가 바로남
+  useEffect(() => {
+    const initialSoundFont = async () => {
+      const sf = await SoundFont.instrument(
+        audioContext,
+        'acoustic_grand_piano',
+      );
+      setSoundFont(sf);
+    };
+
+    initialSoundFont();
+  }, []);
   const notes = [
     'C',
     'C#',
@@ -106,6 +125,7 @@ const Piano = () => {
           octave={octave}
           note={note}
           audioContext={audioContext}
+          soundfont={soundfont}
         />,
       );
     }
