@@ -4,25 +4,15 @@ import { useColorMode } from '@chakra-ui/color-mode';
 import React from 'react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { IconButton } from '@chakra-ui/button';
-import {
-  Button,
-  Text,
-  Heading,
-  VStack,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import { Text, Heading, VStack } from '@chakra-ui/react';
 import InputArea from '@/components/InputArea';
-import MyIcon from '@/components/common/MyIcon';
-import { useRecoilState } from 'recoil';
-import { iconType } from '../atom/atom';
 
 const Piano = dynamic(() => import('@/components/Piano'), { ssr: false });
+const Record = dynamic(() => import('@/components/Record'), { ssr: false });
 
 const Home: NextPage = () => {
   // hook which help us to toggle the color modes
   const { colorMode, toggleColorMode } = useColorMode();
-  const [icon, setIcon] = useRecoilState(iconType);
-  const squareColor = useColorModeValue('gray.600', 'gray.200');
 
   return (
     <div>
@@ -50,23 +40,7 @@ const Home: NextPage = () => {
       <VStack justify="center" spacing={20} mt="2rem">
         <Piano />
         <InputArea />
-        <Button
-          w="96px"
-          h="96px"
-          onClick={() => {
-            if (icon === 'circle') {
-              setIcon('square');
-            } else {
-              setIcon('circle');
-            }
-          }}
-        >
-          <MyIcon
-            type={icon}
-            boxSize={icon === 'circle' ? 16 : 12}
-            color={icon === 'circle' ? 'red.400' : squareColor}
-          />
-        </Button>
+        <Record />
       </VStack>
     </div>
   );
