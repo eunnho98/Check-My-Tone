@@ -64,7 +64,7 @@ const PianoKey = ({
       alignItems="flex-end"
       justifyContent="center"
       borderRadius={`${isBlackKey ? '0 0 8px 8px' : '8px'}`}
-      boxShadow={`${isBlackKey ? 'none' : 'md'}`}
+      boxShadow={`${isBlackKey ? 'none' : 'lg'}`}
       color={`${isBlackKey ? 'white' : 'black'}`}
       onMouseDown={() => handleMouseDown(label)}
       onMouseUp={handleMouseUp}

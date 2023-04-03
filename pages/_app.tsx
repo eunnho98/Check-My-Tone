@@ -7,6 +7,13 @@ const theme = extendTheme({
     heading: `'Stylish', sans-serif`,
     body: `'Stylish', sans-serif`,
   },
+  styles: {
+    global: (props: { colorMode: string }) => ({
+      body: {
+        bg: props.colorMode === 'light' ? 'gray.100' : 'gray.800',
+      },
+    }),
+  },
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

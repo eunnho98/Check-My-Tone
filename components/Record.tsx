@@ -16,8 +16,8 @@ function Record() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isPressed, setIsPressed] = useState(false);
   const [icon, setIcon] = useRecoilState(iconType);
-  const squareColor = useColorModeValue('gray.600', 'gray.200');
-
+  const squareColor = useColorModeValue('gray.600', 'gray.300');
+  const buttonColor = useColorModeValue('gray.300', 'gray.700');
   useEffect(() => {
     const getUserMedia = async () => {
       try {
@@ -80,11 +80,13 @@ function Record() {
         requestId = requestAnimationFrame(visualize);
         if (getPitch) {
           const midi = pitchToMidi(getPitch);
-          console.log('midi', midi);
+          if (midi !== 133) {
+            // 처음에 나오는 음 & G#5은 무시
+            console.log('midi', midi);
+          }
         }
       };
       visualize();
-
       // requestAnimationFrame 때문에 visualize()가 한 번만 호출되어도 계속 실행됨
       // 명시적으로 정지시켜야함
       return () => {
@@ -101,6 +103,7 @@ function Record() {
     <Button
       w="96px"
       h="96px"
+      bgColor={buttonColor}
       onClick={() => {
         startRecord();
         if (icon === 'circle') {
