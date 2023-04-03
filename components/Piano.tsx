@@ -68,6 +68,7 @@ const PianoKey = ({
       color={`${isBlackKey ? 'white' : 'black'}`}
       onMouseDown={() => handleMouseDown(label)}
       onMouseUp={handleMouseUp}
+      onMouseOut={handleMouseUp}
       cursor="pointer"
     >
       <Box fontSize={`${isBlackKey ? 12 : 18}px`} fontWeight="bold">
