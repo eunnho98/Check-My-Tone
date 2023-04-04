@@ -74,12 +74,16 @@ function Record() {
   }, [isPressed]);
 
   useEffect(() => {
+    async function resumeAudio() {
+      if (audioContextRef.current!.state === 'suspended') {
+        await audioContextRef.current!.resume();
+      }
+    }
     let requestId: number;
     if (stream && isPressed && audioContextRef.current) {
       const audioContext = audioContextRef.current;
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
+
+      resumeAudio();
       // createMediaStreamSource(): media stream이 주어지면 오디오를 재생하고 조작할 수 있는 ac를 만듦
       const source = audioContext.createMediaStreamSource(stream);
 
