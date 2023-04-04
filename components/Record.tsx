@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Pitchfinder from 'pitchfinder';
-import { Button, useColorModeValue } from '@chakra-ui/react';
+import { Button, useColorModeValue, Text } from '@chakra-ui/react';
 import { useRecoilState } from 'recoil';
 import { iconType } from '@/atom/atom';
 import MyIcon from './common/MyIcon';
 import { pitchToMidi } from '@/lib';
+import SoundFont from 'soundfont-player';
 
 declare global {
   interface Window {
@@ -14,21 +15,52 @@ declare global {
 }
 function Record() {
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [soundfont, setSoundFont] = useState<SoundFont.Player>();
+  const [startTime, setStartTime] = useState<Date>();
+  const [duration, setDuration] = useState<number>(0); // 녹음시간
   const [isPressed, setIsPressed] = useState(false);
+
   const [icon, setIcon] = useRecoilState(iconType);
+
   const squareColor = useColorModeValue('gray.600', 'gray.300');
   const buttonColor = useColorModeValue('gray.300', 'gray.700');
+
+  // useEffect 내에서 초기화한 변수를 다른 useEffect에서도 사용하기 위해
+  const audioContextRef = useRef<AudioContext | null>(null);
+
   useEffect(() => {
+    audioContextRef.current = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const initialSoundFont = async () => {
+      const sf = await SoundFont.instrument(
+        audioContextRef.current!,
+        'acoustic_grand_piano',
+      );
+      setSoundFont(sf);
+    };
+
+    initialSoundFont();
+  }, []);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
     const getUserMedia = async () => {
       try {
         // record를 누르면
         if (isPressed) {
+          setDuration(0);
+          interval = setInterval(() => {
+            setDuration((prev) => prev + 0.01);
+          }, 10);
           const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
           });
           setStream(stream);
           // 종료
         } else {
+          if (soundfont) {
+            soundfont.stop();
+          }
           if (stream !== null) {
             stream.getTracks().forEach((track) => track.stop());
           }
@@ -38,17 +70,16 @@ function Record() {
       }
     };
     getUserMedia();
+    return () => clearInterval(interval);
   }, [isPressed]);
 
   useEffect(() => {
     let requestId: number;
-    if (stream && isPressed) {
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)(); // getUserMedia API를 사용하여 사용자의 마이크 입력을 가져옴
+    if (stream && isPressed && audioContextRef.current) {
+      const audioContext = audioContextRef.current;
 
       // createMediaStreamSource(): media stream이 주어지면 오디오를 재생하고 조작할 수 있는 ac를 만듦
       const source = audioContext.createMediaStreamSource(stream);
-      console.log('audio', audioContext);
 
       // 볼륨 조절을 할 수 있음
       const gainNode = audioContext.createGain();
@@ -56,13 +87,14 @@ function Record() {
       const analyser = audioContext.createAnalyser();
 
       // 처리된 입력을 출력할 AudioContext의 출력 노드 생성
-      const destination = audioContext.destination;
+      // * 여기선 stream을 그대로 출력하는 것이 아니라 선언하지 않음
+      // const destination = audioContext.destination;
 
       // 처리된 입력을 출력하는 노드 생성
       // 노드들을 서로 연결, 연결 순서는 source -> gainNode -> destination
       source.connect(gainNode);
       gainNode.connect(analyser);
-      analyser.connect(destination);
+      // analyser.connect(destination);
 
       // 실시간으로 처리된 입력을 출력
       const visualize = () => {
@@ -73,16 +105,22 @@ function Record() {
         analyser.getByteTimeDomainData(dataArray);
         // * dataArray를 사용하여 원하는 방식으로 시각화
         // * pitch
-        const detectPitch = Pitchfinder.YIN();
+
+        const detectPitch = Pitchfinder.AMDF();
         const unitArray = Float32Array.from(dataArray);
         const getPitch = detectPitch(unitArray);
 
         requestId = requestAnimationFrame(visualize);
         if (getPitch) {
           const midi = pitchToMidi(getPitch);
-          if (midi !== 133) {
+          if (midi && midi !== 83) {
             // 처음에 나오는 음 & G#5은 무시
-            console.log('midi', midi);
+            if (soundfont) {
+              // midi + 1이 실제 찾는 값
+              soundfont.play((midi + 1).toString(), audioContext.currentTime, {
+                gain: 2,
+              });
+            }
           }
         }
       };
@@ -97,28 +135,41 @@ function Record() {
 
   const startRecord = () => {
     setIsPressed((prev) => !prev);
+    if (!isPressed) {
+      setStartTime(new Date());
+    }
+    if (startTime && isPressed) {
+      const endTime = new Date();
+      setDuration((endTime.getTime() - startTime.getTime()) / 1000);
+    }
   };
 
   return (
-    <Button
-      w="96px"
-      h="96px"
-      bgColor={buttonColor}
-      onClick={() => {
-        startRecord();
-        if (icon === 'circle') {
-          setIcon('square');
-        } else {
-          setIcon('circle');
-        }
-      }}
-    >
-      <MyIcon
-        type={icon}
-        boxSize={icon === 'circle' ? 16 : 12}
-        color={icon === 'circle' ? 'red.400' : squareColor}
-      />
-    </Button>
+    <>
+      <Text textAlign="center" fontSize="3xl" fontWeight="bold">
+        시간: {duration.toFixed(2)}
+      </Text>
+
+      <Button
+        w="96px"
+        h="96px"
+        bgColor={buttonColor}
+        onClick={() => {
+          startRecord();
+          if (icon === 'circle') {
+            setIcon('square');
+          } else {
+            setIcon('circle');
+          }
+        }}
+      >
+        <MyIcon
+          type={icon}
+          boxSize={icon === 'circle' ? 16 : 12}
+          color={icon === 'circle' ? 'red.400' : squareColor}
+        />
+      </Button>
+    </>
   );
 }
 
