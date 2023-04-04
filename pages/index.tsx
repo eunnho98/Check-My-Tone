@@ -5,7 +5,6 @@ import React from 'react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { IconButton } from '@chakra-ui/button';
 import { Text, Heading, VStack } from '@chakra-ui/react';
-import InputArea from '@/components/InputArea';
 
 const Piano = dynamic(() => import('@/components/Piano'), { ssr: false });
 const Record = dynamic(() => import('@/components/Record'), { ssr: false });
@@ -39,8 +38,10 @@ const Home: NextPage = () => {
 
       <VStack justify="center" spacing={20} mt="2rem">
         <Piano />
-        <InputArea />
         <Record />
+        <Text textAlign="center" fontSize="3xl" fontWeight="bold">
+          주위 소음을 차단해주세요!
+        </Text>
       </VStack>
     </div>
   );

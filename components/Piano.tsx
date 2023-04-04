@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SoundFont from 'soundfont-player';
 
 declare global {
@@ -98,6 +98,7 @@ const Piano = () => {
 
     initialSoundFont();
   }, []);
+
   const notes = [
     'C',
     'C#',
