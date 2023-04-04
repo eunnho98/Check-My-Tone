@@ -1,5 +1,5 @@
-import { pitchArray } from '@/atom/atom';
 import { useRecoilValue } from 'recoil';
+import { pitchArray } from '@/atom/atom';
 
 export function pitchToMidi(pitch: number) {
   const midiNumber = 69 + 12 * Math.log2(pitch / 440);

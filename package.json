@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/button": "^2.0.18",
+    "@chakra-ui/color-mode": "^2.1.12",
     "@chakra-ui/icons": "^2.0.18",
     "@chakra-ui/react": "^2.5.4",
     "@emotion/react": "^11.10.6",
