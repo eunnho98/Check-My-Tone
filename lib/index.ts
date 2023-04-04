@@ -1,9 +1,26 @@
+import { pitchArray } from '@/atom/atom';
+import { useRecoilValue } from 'recoil';
+
 export function pitchToMidi(pitch: number) {
-  const midiRef = 69; // A4 MIDI 값
-  const aFrequency = 440; // A4의 주파수
+  const midiNumber = 69 + 12 * Math.log2(pitch / 440);
 
-  const distance = 12 * (Math.log2(pitch) - Math.log2(aFrequency));
-  const midiValue = Math.round(midiRef + distance);
+  return Math.round(midiNumber);
+}
 
-  return midiValue;
+export function getMostMidi() {
+  const pitchArr = useRecoilValue(pitchArray);
+  const frequencies: { [key: number]: number } = {};
+  let maxFrequency = 0;
+  let mostFrequentPitch = null;
+
+  for (const pitch of pitchArr) {
+    if (pitch) {
+      frequencies[pitch] = (frequencies[pitch] || 0) + 1;
+      if (frequencies[pitch] > maxFrequency) {
+        maxFrequency = frequencies[pitch];
+        mostFrequentPitch = pitch;
+      }
+    }
+  }
+  return mostFrequentPitch;
 }
