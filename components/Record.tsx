@@ -81,6 +81,7 @@ function Record() {
     }
     let requestId: number;
     if (stream && isPressed && audioContextRef.current) {
+      resumeAudio();
       const audioContext = audioContextRef.current;
 
       // createMediaStreamSource(): media stream이 주어지면 오디오를 재생하고 조작할 수 있는 ac를 만듦
@@ -122,7 +123,6 @@ function Record() {
             // 처음에 나오는 음 & G#5은 무시
             if (soundfont) {
               // midi + 1이 실제 찾는 값
-              resumeAudio();
               soundfont.play((midi + 1).toString(), audioContext.currentTime, {
                 gain: 2,
               });
