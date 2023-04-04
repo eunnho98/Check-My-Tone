@@ -79,7 +79,6 @@ function Record() {
         await audioContextRef.current!.resume();
       }
     }
-    resumeAudio();
     let requestId: number;
     if (stream && isPressed && audioContextRef.current) {
       const audioContext = audioContextRef.current;
@@ -123,6 +122,7 @@ function Record() {
             // 처음에 나오는 음 & G#5은 무시
             if (soundfont) {
               // midi + 1이 실제 찾는 값
+              resumeAudio();
               soundfont.play((midi + 1).toString(), audioContext.currentTime, {
                 gain: 2,
               });
