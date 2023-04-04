@@ -1,5 +1,5 @@
-import { Box } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { Box } from '@chakra-ui/react';
 import SoundFont from 'soundfont-player';
 
 declare global {
@@ -116,7 +116,7 @@ const Piano = () => {
   const octaves = [2, 3, 4];
   const keys = [];
 
-  for (let octave of octaves) {
+  for (const octave of octaves) {
     for (let i = 0; i < notes.length; i++) {
       const note = notes[i];
       const isBlackKey = [1, 3, 6, 8, 10].includes(i);

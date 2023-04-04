@@ -39,7 +39,13 @@
     "import/prefer-default-export": "off",
     "react/react-in-jsx-scope": "off",
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "react/jsx-props-no-spreading": ["warn"]
+    "react/jsx-props-no-spreading": ["warn"],
+    "no-restricted-syntax": "off",
+    "no-shadow": "off",
+    "import/order": "off",
+    "consistent-return": "off",
+    "no-plusplus": "off",
+    "react/function-component-definition": "off"
   },
   "settings": {
     "import/resolver": {

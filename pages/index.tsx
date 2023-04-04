@@ -6,10 +6,10 @@ import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { IconButton } from '@chakra-ui/button';
 import { Text, Heading, VStack } from '@chakra-ui/react';
 
-const Piano = dynamic(() => import('@/components/Piano'), { ssr: false });
-const Record = dynamic(() => import('@/components/Record'), { ssr: false });
+const Piano = dynamic(() => import('../components/Piano'), { ssr: false });
+const Record = dynamic(() => import('../components/Record'), { ssr: false });
 
-const Home: NextPage = () => {
+function Home() {
   // hook which help us to toggle the color modes
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -45,6 +45,6 @@ const Home: NextPage = () => {
       </VStack>
     </div>
   );
-};
+}
 
 export default Home;

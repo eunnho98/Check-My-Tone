@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as Pitchfinder from 'pitchfinder';
 import { Button, useColorModeValue, Text } from '@chakra-ui/react';
 import { useRecoilState } from 'recoil';
-import { iconType } from '@/atom/atom';
+import { iconType } from '../atom/atom';
 import MyIcon from './common/MyIcon';
-import { pitchToMidi } from '@/lib';
+import { pitchToMidi } from '../lib';
 import SoundFont from 'soundfont-player';
 
 declare global {
